@@ -3,7 +3,93 @@
 # Responsibility: Define system prompts and JSON templates
 # ==========================================
 
-# Prompt templates for root cause analysis, diagnostics, and recovery plans
+import json
+from typing import Any, Dict, List, Optional
+
+SYSTEM_PROMPT = """You are an expert SRE and Incident Response Lead AI.
+Your task is to analyze a production incident timeline built from heterogeneous telemetry streams (alerts, logs, metrics, complaints, deploys, config changes, gc_profiler).
+
+CRITICAL CONSTRAINTS:
+1. Return ONLY valid, raw JSON matching the schema below. Do NOT wrap output in markdown fences (```json ... ```) or add commentary outside the JSON.
+2. Analyze ONLY the supplied incident timeline and metadata. Do not invent background facts or event IDs.
+3. Generate between 2 and 4 competing root-cause hypotheses (rank 1 = most likely).
+4. Assign a confidence score between 0.00 and 1.00 for each hypothesis.
+5. EVERY evidence item (supporting_evidence and contradicting_evidence) MUST reference a real "event_id" present in the VALID EVENT IDs list.
+6. Note that correlation does not imply causation; deployment or configuration changes may be red herrings.
+7. Produce a prioritized diagnostic_sequence that tests competing hypotheses.
+8. Produce EXACTLY ONE recovery_proposal with "requires_human_approval": true. NEVER claim remediation was executed and NEVER execute any production action.
+
+JSON OUTPUT SCHEMA:
+{
+  "incident_summary": "High-level summary of the incident based strictly on timeline events",
+  "hypotheses": [
+    {
+      "rank": 1,
+      "root_cause": "Short description of hypothesized root cause",
+      "confidence": 0.85,
+      "supporting_evidence": [
+        {
+          "event_id": "EVT-DEP-4101",
+          "reason": "Why this specific timeline event supports this hypothesis"
+        }
+      ],
+      "contradicting_evidence": [
+        {
+          "event_id": "EVT-ALT-101",
+          "reason": "Why this specific timeline event contradicts this hypothesis"
+        }
+      ],
+      "reasoning_summary": "Explanation of why this hypothesis ranks where it does"
+    }
+  ],
+  "diagnostic_sequence": [
+    {
+      "priority": 1,
+      "diagnostic": "Specific command or check to run",
+      "tests_hypothesis": "The specific root cause hypothesis being evaluated",
+      "expected_signal": "What signal would confirm or weaken this hypothesis"
+    }
+  ],
+  "recovery_proposal": {
+    "action": "Proposed mitigation or recovery action",
+    "reason": "Why this action is proposed based on evidence",
+    "risk": "Potential risks or drawbacks of executing this action",
+    "requires_human_approval": true
+  }
+}
+"""
+
+
+def build_analysis_prompt(
+    timeline: List[Dict[str, Any]],
+    past_incidents: Optional[List[Dict[str, Any]]] = None,
+) -> str:
+    """Build user prompt containing the structured incident timeline and valid event IDs."""
+    valid_event_ids = [
+        str(item.get("id") or item.get("event_id"))
+        for item in timeline
+        if isinstance(item, dict) and (item.get("id") or item.get("event_id"))
+    ]
+    formatted_timeline = json.dumps(timeline, indent=2)
+
+    prompt = f"""INCIDENT TIMELINE EVENTS (Total: {len(timeline)}):
+{formatted_timeline}
+
+VALID EVENT IDs THAT YOU MAY REFERENCE:
+{json.dumps(valid_event_ids)}
+"""
+    if past_incidents:
+        prompt += f"\nHISTORICAL INCIDENT MEMORY:\n{json.dumps(past_incidents, indent=2)}\n"
+
+    prompt += """
+Instructions:
+Analyze the timeline events and metadata above and output structured JSON following all constraints.
+Ensure all referenced event_ids exist in the VALID EVENT IDs list above.
+"""
+    return prompt
+
+
+# Prompt templates for root cause analysis, diagnostics, and recovery plans (Used by app.py)
 
 HYPOTHESIS_PROMPT = """
 You are an expert Incident Response AI agent.

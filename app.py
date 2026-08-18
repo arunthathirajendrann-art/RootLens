@@ -3,18 +3,20 @@
 # Responsibility: Orchestrate visual timeline tabs and dashboards
 # ==========================================
 
-import streamlit as st
 import os
 import json
 import pandas as pd
+import streamlit as st
 from datetime import datetime
 
-from ingestion.normalizer import ingest_all_signals
-from correlation.timeline_builder import build_chronological_timeline, format_timeline_for_prompt
-from correlation.correlation_engine import correlate_incident_context
-from reasoning.hypothesis_engine import analyze_hypotheses
-from recovery.diagnostic_planner import plan_diagnostics
-from recovery.recovery_planner import plan_recovery
+from ingestion.normalizer import normalize_initial_incident_signals, normalize_late_evidence
+from correlation.correlation_engine import correlate_events, re_correlate
+from correlation.timeline_builder import build_timeline
+from reasoning.hypothesis_engine import (
+    analyze_unified_timeline,
+    timeline_to_reasoning_dicts,
+    _generate_mock_analysis,
+)
 from utils.config import PAST_INCIDENTS_PATH, is_gemini_active
 
 import ui.timeline_view as timeline_view
@@ -27,11 +29,12 @@ st.set_page_config(
     page_title="RootLens Incident Commander",
     page_icon="🛡️",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed",
 )
 
 # Custom minimalist light-theme CSS
-st.markdown("""
+st.markdown(
+    """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
     
@@ -41,7 +44,6 @@ st.markdown("""
         background-color: #ffffff;
     }
     
-    /* Clean, soft grey card styling */
     .metric-card {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
@@ -58,21 +60,10 @@ st.markdown("""
         position: relative;
     }
     
-    .timeline-item.critical {
-        border-left-color: #ef4444;
-    }
-    
-    .timeline-item.warning {
-        border-left-color: #f59e0b;
-    }
-    
-    .timeline-item.info {
-        border-left-color: #10b981;
-    }
-    
-    .timeline-item.deploy {
-        border-left-color: #a855f7;
-    }
+    .timeline-item.critical { border-left-color: #ef4444; }
+    .timeline-item.warning { border-left-color: #f59e0b; }
+    .timeline-item.info { border-left-color: #10b981; }
+    .timeline-item.deploy { border-left-color: #a855f7; }
     
     .timeline-time {
         font-size: 0.8rem;
@@ -115,13 +106,16 @@ st.markdown("""
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # Main Title & Subheader
-st.markdown("""
+st.markdown(
+    """
 <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px;">
     <div style="display: flex; align-items: center; gap: 10px;">
-        <h2 style="margin:0; font-weight:700; color: #0f172a;">RootLens Incident Control</h2>
+        <h2 style="margin:0; font-weight:700; color: #0f172a;">RootLens Incident Commander</h2>
         <span style="background-color: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">
             ACTIVE INCIDENT
         </span>
@@ -130,9 +124,11 @@ st.markdown("""
         Active ID: <strong>ACT-0921</strong> | Target: <strong>payment-service</strong>
     </div>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-# Helper to load historical incident database
+
 def load_historical_memory():
     if os.path.exists(PAST_INCIDENTS_PATH):
         with open(PAST_INCIDENTS_PATH, "r") as f:
@@ -142,70 +138,112 @@ def load_historical_memory():
                 return []
     return []
 
-# Initialize state
-if 'all_signals' not in st.session_state:
-    st.session_state.all_signals = ingest_all_signals()
 
-if 'timeline' not in st.session_state:
-    st.session_state.timeline = build_chronological_timeline(st.session_state.all_signals)
+# 1. Pipeline Initialization (Member A -> Member B -> Member C)
+if "unified_timeline" not in st.session_state:
+    raw_events = normalize_initial_incident_signals()
+    clusters = correlate_events(raw_events)
+    st.session_state.unified_timeline = build_timeline(clusters)
 
-past_incidents = load_historical_memory()
+if "late_evidence_injected" not in st.session_state:
+    st.session_state.late_evidence_injected = False
 
-# Setup reasoning data once
-timeline_str = format_timeline_for_prompt(st.session_state.timeline)
-past_incidents_str = json.dumps(past_incidents, indent=2)
+if "analysis_result" not in st.session_state:
+    with st.spinner("AI is analyzing Member B UnifiedTimeline..."):
+        try:
+            st.session_state.analysis_result = analyze_unified_timeline(st.session_state.unified_timeline)
+        except Exception as exc:
+            st.warning(f"AI Reasoning warning: {exc}. Using deterministic fallback analyzer.")
+            formatted_dicts = timeline_to_reasoning_dicts(st.session_state.unified_timeline)
+            st.session_state.analysis_result = _generate_mock_analysis(formatted_dicts)
 
-if 'hypotheses_data' not in st.session_state:
-    with st.spinner("AI is generating competing root-cause hypotheses..."):
-        st.session_state.hypotheses_data = analyze_hypotheses(timeline_str, past_incidents_str)
-        st.session_state.diagnostics_data = plan_diagnostics(timeline_str, json.dumps(st.session_state.hypotheses_data))
-        st.session_state.recovery_data = plan_recovery(timeline_str, json.dumps(st.session_state.hypotheses_data))
+# 2. Extract analysis structures for Member D views
+analysis = st.session_state.analysis_result
+hypotheses_data = {"hypotheses": analysis.get("hypotheses", [])}
+diagnostics_data = {"diagnostic_steps": analysis.get("diagnostic_sequence", [])}
 
-# Layout the page cleanly - Triage & Approval right in the front
+recovery_prop = analysis.get("recovery_proposal", {})
+if isinstance(recovery_prop, dict) and recovery_prop:
+    recovery_data = {"recovery_actions": [recovery_prop]}
+else:
+    recovery_data = {"recovery_actions": analysis.get("recovery_actions", [])}
+
+# 3. Late Evidence Demo Control (Member B Re-Correlation -> Member C Re-Analysis)
+st.markdown("### ⚡ Live Incident Operations Control")
+col_ctrl1, col_ctrl2 = st.columns([2, 1])
+
+with col_ctrl1:
+    if not st.session_state.late_evidence_injected:
+        if st.button("⚡ Inject Late-Arriving Evidence & Re-correlate", type="secondary"):
+            with st.spinner("Re-correlating with late-arriving evidence & updating analysis..."):
+                late_events = normalize_late_evidence()
+                re_result = re_correlate(st.session_state.unified_timeline, late_events)
+                st.session_state.unified_timeline = re_result.timeline
+                st.session_state.late_evidence_injected = True
+                try:
+                    st.session_state.analysis_result = analyze_unified_timeline(st.session_state.unified_timeline)
+                except Exception as exc:
+                    st.warning(f"AI Reasoning update warning: {exc}. Using fallback analyzer.")
+                    formatted_dicts = timeline_to_reasoning_dicts(st.session_state.unified_timeline)
+                    st.session_state.analysis_result = _generate_mock_analysis(formatted_dicts)
+                st.rerun()
+    else:
+        st.success(
+            f"⚡ Late-arriving evidence injected! UnifiedTimeline updated to {st.session_state.unified_timeline.event_count} events across components: {', '.join(st.session_state.unified_timeline.components)}"
+        )
+
+with col_ctrl2:
+    if st.button("🔄 Reset Initial Timeline"):
+        st.session_state.clear()
+        st.rerun()
+
+st.markdown("---")
+
+# 4. Member D UI Layout
 col_left, col_right = st.columns([1, 1], gap="medium")
 
-# LEFT COLUMN: Approval Gate, AI Hypotheses & Troubleshooting (Action Items)
 with col_left:
     st.markdown("### 🛡️ Operational Gate")
-    # Interactive portal right in front
-    approval_view.render_approval_portal(st.session_state.recovery_data, st.session_state.hypotheses_data)
-    
-    st.markdown("---")
-    
-    st.markdown("### 🧠 AI Root-Cause Analysis")
-    hypothesis_view.render_hypotheses(st.session_state.hypotheses_data)
-    
-    st.markdown("---")
-    diagnostic_view.render_diagnostics(st.session_state.diagnostics_data)
+    approval_view.render_approval_portal(recovery_data, hypotheses_data)
 
-# RIGHT COLUMN: Telemetry Signal log, Graphs, & Historical memory database
+    st.markdown("---")
+
+    st.markdown("### 🧠 AI Root-Cause Analysis")
+    hypothesis_view.render_hypotheses(hypotheses_data)
+
+    st.markdown("---")
+    diagnostic_view.render_diagnostics(diagnostics_data)
+
 with col_right:
-    # Render unified timeline logs
-    timeline_view.render_timeline(st.session_state.timeline)
-    
+    timeline_view.render_timeline(st.session_state.unified_timeline)
+
     st.markdown("---")
     st.subheader("System Metrics")
     metrics_csv_path = os.path.join(os.path.dirname(__file__), "data", "metrics.csv")
     if os.path.exists(metrics_csv_path):
         df_metrics = pd.read_csv(metrics_csv_path)
-        services = df_metrics['service'].unique().tolist()
-        selected_service = st.selectbox("Select Target Service", services, index=services.index("payment-service") if "payment-service" in services else 0)
-        df_svc = df_metrics[df_metrics['service'] == selected_service]
-        
+        services = df_metrics["service"].unique().tolist()
+        selected_service = st.selectbox(
+            "Select Target Service",
+            services,
+            index=services.index("payment-service") if "payment-service" in services else 0,
+        )
+        df_svc = df_metrics[df_metrics["service"] == selected_service]
+
         st.write(f"CPU Utilization % ({selected_service})")
-        st.line_chart(data=df_svc, x='timestamp', y='cpu_utilization_pct', color="#6366f1")
-        
+        st.line_chart(data=df_svc, x="timestamp", y="cpu_utilization_pct", color="#6366f1")
+
         st.write(f"p99 Response Latency ({selected_service})")
-        st.line_chart(data=df_svc, x='timestamp', y='p99_latency_ms', color="#f59e0b")
+        st.line_chart(data=df_svc, x="timestamp", y="p99_latency_ms", color="#f59e0b")
     else:
         st.info("No metrics file found.")
 
 st.markdown("---")
-# Clean collapsible history list to keep page minimal
 with st.expander("📚 Operational Memory Log History (RAG Reference List)"):
     fresh_history = load_historical_memory()
     for inc in fresh_history:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="metric-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <strong>Incident {inc.get('incident_id')} ({inc.get('component')})</strong>
@@ -218,4 +256,6 @@ with st.expander("📚 Operational Memory Log History (RAG Reference List)"):
                 <p style="margin:4px 0; color:#64748b; font-style:italic;"><strong>Operator Notes:</strong> {inc.get('operator_notes')}</p>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
