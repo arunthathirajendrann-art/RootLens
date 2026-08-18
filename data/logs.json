@@ -1,0 +1,50 @@
+[
+  {
+    "timestamp": "2026-08-18T10:01:15Z",
+    "component": "payment-api",
+    "level": "INFO",
+    "message": "Service starting up on port 8080. Active profiles: prod."
+  },
+  {
+    "timestamp": "2026-08-18T10:03:30Z",
+    "component": "payment-api",
+    "level": "INFO",
+    "message": "Connection established to database host db-primary-01.internal."
+  },
+  {
+    "timestamp": "2026-08-18T10:05:00Z",
+    "component": "payment-api",
+    "level": "WARNING",
+    "message": "Database connection pool utilization at 85% (170/200 active connections)."
+  },
+  {
+    "timestamp": "2026-08-18T10:07:45Z",
+    "component": "payment-api",
+    "level": "WARNING",
+    "message": "Database connection pool utilization at 95% (190/200 active connections)."
+  },
+  {
+    "timestamp": "2026-08-18T10:08:12Z",
+    "component": "database",
+    "level": "WARNING",
+    "message": "PostgreSQL: Client connection limit reached. 200 clients already connected. Rejecting new connections."
+  },
+  {
+    "timestamp": "2026-08-18T10:09:00Z",
+    "component": "payment-api",
+    "level": "ERROR",
+    "message": "Error: Connection acquisition timeout after 5000ms. Request path: /checkout/pay"
+  },
+  {
+    "timestamp": "2026-08-18T10:11:30Z",
+    "component": "payment-api",
+    "level": "ERROR",
+    "message": "SQLException: Cannot get connection from pool. Timeout waiting for idle object."
+  },
+  {
+    "timestamp": "2026-08-18T10:14:10Z",
+    "component": "web-gateway",
+    "level": "ERROR",
+    "message": "Upstream timeout: 504 Gateway Timeout on POST /api/v1/payment/checkout"
+  }
+]

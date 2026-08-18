@@ -1,0 +1,22 @@
+[
+  {
+    "timestamp": "2026-07-10T14:30:00Z",
+    "incident_id": "INC-001",
+    "component": "auth-service",
+    "symptoms": "Auth validation latency spike, 504 Gateway Timeouts, Redis pool exhaustion warnings in logs.",
+    "root_cause": "auth-service redis connection leak due to unreleased client sockets in cache middleware.",
+    "recovery_action": "Restart auth-service deployment to free connections; hotfix redis pool management release mechanism.",
+    "status": "SUCCESSFUL",
+    "operator_notes": "Always release redis connections in a finally block."
+  },
+  {
+    "timestamp": "2026-08-01T08:22:00Z",
+    "incident_id": "INC-002",
+    "component": "database",
+    "symptoms": "High CPU utilization (98%), disk I/O saturated.",
+    "root_cause": "Missing database index on user_sessions.token field leading to full table scans.",
+    "recovery_action": "Run database migration to add btree index on user_sessions(token).",
+    "status": "SUCCESSFUL",
+    "operator_notes": "Added index check to pre-deployment checklist."
+  }
+]

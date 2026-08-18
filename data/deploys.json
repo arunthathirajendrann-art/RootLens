@@ -1,0 +1,20 @@
+[
+  {
+    "timestamp": "2026-08-18T10:00:00Z",
+    "deploy_id": "DEP-772",
+    "component": "payment-api",
+    "version": "v1.4.2",
+    "status": "SUCCESS",
+    "deployed_by": "john.doe@tcs.com",
+    "change_log": "Optimized transaction handling in payment controllers and updated DB client library."
+  },
+  {
+    "timestamp": "2026-08-18T09:15:00Z",
+    "deploy_id": "DEP-771",
+    "component": "auth-service",
+    "version": "v2.1.0",
+    "status": "SUCCESS",
+    "deployed_by": "jane.smith@tcs.com",
+    "change_log": "Added JWT cache token validation policy and fixed minor log formatting."
+  }
+]

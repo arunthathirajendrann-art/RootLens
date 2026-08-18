@@ -1,0 +1,26 @@
+[
+  {
+    "timestamp": "2026-08-18T10:10:00Z",
+    "alert_id": "AL-109",
+    "name": "DBPoolExhausted",
+    "component": "payment-api",
+    "severity": "CRITICAL",
+    "message": "Database connection pool utilization has reached 100% (200/200 active connections)."
+  },
+  {
+    "timestamp": "2026-08-18T10:12:00Z",
+    "alert_id": "AL-110",
+    "name": "Http5xxRateHigh",
+    "component": "payment-api",
+    "severity": "CRITICAL",
+    "message": "HTTP 5xx responses exceeded 15% of total traffic in the last 2 minutes."
+  },
+  {
+    "timestamp": "2026-08-18T10:15:00Z",
+    "alert_id": "AL-111",
+    "name": "ServiceLatencySpike",
+    "component": "web-gateway",
+    "severity": "WARNING",
+    "message": "Upstream response time from payment-api averages > 5000ms."
+  }
+]

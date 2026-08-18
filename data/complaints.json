@@ -1,0 +1,23 @@
+[
+  {
+    "timestamp": "2026-08-18T10:11:00Z",
+    "user_id": "usr-8891",
+    "complaint_id": "TKT-4001",
+    "severity": "HIGH",
+    "message": "When I try to click pay on the checkout screen, the loading spinner just spins forever and eventually shows 'Payment failed: Server Timeout'."
+  },
+  {
+    "timestamp": "2026-08-18T10:13:15Z",
+    "user_id": "usr-3422",
+    "complaint_id": "TKT-4002",
+    "severity": "HIGH",
+    "message": "Getting 500 error page when submitting the payment form."
+  },
+  {
+    "timestamp": "2026-08-18T10:16:00Z",
+    "user_id": "usr-1102",
+    "complaint_id": "TKT-4003",
+    "severity": "MEDIUM",
+    "message": "The checkout page is extremely slow, taking more than 10 seconds to load."
+  }
+]
