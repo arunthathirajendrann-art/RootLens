@@ -1,26 +1,62 @@
 [
   {
-    "timestamp": "2026-08-18T10:10:00Z",
-    "alert_id": "AL-109",
-    "name": "DBPoolExhausted",
-    "component": "payment-api",
-    "severity": "CRITICAL",
-    "message": "Database connection pool utilization has reached 100% (200/200 active connections)."
+    "alert_id": "ALT-9001",
+    "timestamp": "2026-08-18T13:52:00Z",
+    "service": "inventory-service",
+    "severity": "INFO",
+    "alert_name": "InventorySyncHeartbeat",
+    "metric_name": "sync_heartbeat_status",
+    "threshold": "equals: 1",
+    "observed_value": 1.0,
+    "status": "resolved",
+    "description": "Routine inventory catalog sync heartbeat ping healthy"
   },
   {
-    "timestamp": "2026-08-18T10:12:00Z",
-    "alert_id": "AL-110",
-    "name": "Http5xxRateHigh",
-    "component": "payment-api",
-    "severity": "CRITICAL",
-    "message": "HTTP 5xx responses exceeded 15% of total traffic in the last 2 minutes."
+    "alert_id": "ALT-9002",
+    "timestamp": "2026-08-18T14:17:00Z",
+    "service": "checkout-service",
+    "severity": "MEDIUM",
+    "alert_name": "CheckoutServiceLatencyWarning",
+    "metric_name": "p95_latency_ms",
+    "threshold": "> 500ms for 2m",
+    "observed_value": 1450.0,
+    "status": "firing",
+    "description": "Checkout API p95 latency exceeds normal SLA threshold of 500ms"
   },
   {
-    "timestamp": "2026-08-18T10:15:00Z",
-    "alert_id": "AL-111",
-    "name": "ServiceLatencySpike",
-    "component": "web-gateway",
-    "severity": "WARNING",
-    "message": "Upstream response time from payment-api averages > 5000ms."
+    "alert_id": "ALT-9003",
+    "timestamp": "2026-08-18T14:20:00Z",
+    "service": "checkout-service",
+    "severity": "CRITICAL",
+    "alert_name": "CheckoutServiceHighLatency",
+    "metric_name": "p99_latency_ms",
+    "threshold": "> 3000ms for 5m",
+    "observed_value": 4580.0,
+    "status": "firing",
+    "description": "P1 Incident: Checkout service p99 latency breached critical 3000ms threshold (current: 4580ms)"
+  },
+  {
+    "alert_id": "ALT-9004",
+    "timestamp": "2026-08-18T14:21:30Z",
+    "service": "checkout-service",
+    "severity": "HIGH",
+    "alert_name": "CheckoutServiceElevated5xx",
+    "metric_name": "error_rate_pct",
+    "threshold": "> 5.0% for 3m",
+    "observed_value": 18.5,
+    "status": "firing",
+    "description": "P2 Incident: Checkout HTTP 5xx error rate surged to 18.5% (threshold: 5.0%)"
+  },
+  {
+    "alert_id": "ALT-9005",
+    "timestamp": "2026-08-18T14:24:00Z",
+    "service": "payment-service",
+    "severity": "LOW",
+    "alert_name": "PaymentThroughputDip",
+    "metric_name": "requests_per_second",
+    "threshold": "< 50 rps",
+    "observed_value": 38.0,
+    "status": "firing",
+    "description": "Payment service incoming traffic rate dropped below 50 rps due to upstream checkout bottlenecks"
   }
 ]

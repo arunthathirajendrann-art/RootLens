@@ -1,0 +1,34 @@
+[
+  {
+    "change_id": "CFG-8910",
+    "timestamp": "2026-08-18T10:15:00Z",
+    "service": "inventory-service",
+    "changed_by": "warehouse-ops@company.internal",
+    "environment": "production",
+    "audit_source": "CentralConfigService",
+    "restart_required": false,
+    "parameter": "stock_reservation_timeout_seconds",
+    "previous_value": 600,
+    "new_value": 900,
+    "reason": "Extend cart item reservation window during seasonal flash promotion"
+  },
+  {
+    "change_id": "CFG-8912",
+    "timestamp": "2026-08-18T14:08:15Z",
+    "service": "checkout-service",
+    "changed_by": "growth-platform-team@company.internal",
+    "environment": "production",
+    "audit_source": "CentralConfigService",
+    "restart_required": false,
+    "parameter": "cart_cache_configuration",
+    "previous_value": {
+      "cart_cache_max_items": 5000,
+      "cache_ttl_seconds": 300
+    },
+    "new_value": {
+      "cart_cache_max_items": 50000,
+      "cache_ttl_seconds": 3600
+    },
+    "reason": "Optimize user cart retention across multi-device sessions without requiring pod restart"
+  }
+]

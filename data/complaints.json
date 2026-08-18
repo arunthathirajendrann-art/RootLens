@@ -1,23 +1,52 @@
 [
   {
-    "timestamp": "2026-08-18T10:11:00Z",
-    "user_id": "usr-8891",
-    "complaint_id": "TKT-4001",
-    "severity": "HIGH",
-    "message": "When I try to click pay on the checkout screen, the loading spinner just spins forever and eventually shows 'Payment failed: Server Timeout'."
+    "ticket_id": "TICK-5011",
+    "timestamp": "2026-08-18T14:22:30Z",
+    "channel": "zendesk",
+    "customer_id": "cust_90412",
+    "platform": "web_desktop",
+    "subject": "Checkout page stuck on loading spinner",
+    "description": "I've been trying to complete my order for 10 minutes. The 'Place Order' button just shows a spinning circle and nothing happens.",
+    "priority": "HIGH"
   },
   {
-    "timestamp": "2026-08-18T10:13:15Z",
-    "user_id": "usr-3422",
-    "complaint_id": "TKT-4002",
-    "severity": "HIGH",
-    "message": "Getting 500 error page when submitting the payment form."
+    "ticket_id": "TICK-5012",
+    "timestamp": "2026-08-18T14:23:45Z",
+    "channel": "zendesk",
+    "customer_id": "cust_84120",
+    "platform": "ios_app",
+    "subject": "Error 504 Gateway Timeout during checkout",
+    "description": "On iOS app, getting 'Server Error 504 - Request timed out' right after entering shipping details and clicking proceed to pay.",
+    "priority": "HIGH"
   },
   {
-    "timestamp": "2026-08-18T10:16:00Z",
-    "user_id": "usr-1102",
-    "complaint_id": "TKT-4003",
-    "severity": "MEDIUM",
-    "message": "The checkout page is extremely slow, taking more than 10 seconds to load."
+    "ticket_id": "TICK-5013",
+    "timestamp": "2026-08-18T14:25:10Z",
+    "channel": "live_chat",
+    "customer_id": "cust_11934",
+    "platform": "android_app",
+    "subject": "Card charged or order failed?",
+    "description": "App froze during order submission and then showed an unexpected error. Did my purchase go through?",
+    "priority": "URGENT"
+  },
+  {
+    "ticket_id": "TICK-5014",
+    "timestamp": "2026-08-18T14:27:00Z",
+    "channel": "social_support",
+    "customer_id": "cust_38190",
+    "platform": "web_mobile",
+    "subject": "Site checkout completely unresponsive",
+    "description": "Multiple users on twitter reporting cart checkout is completely down. Getting spinning wheel on mobile browser.",
+    "priority": "CRITICAL"
+  },
+  {
+    "ticket_id": "TICK-5015",
+    "timestamp": "2026-08-18T14:29:30Z",
+    "channel": "vip_desk",
+    "customer_id": "cust_vip_007",
+    "platform": "web_desktop",
+    "subject": "Enterprise account order submission timing out",
+    "description": "Attempted to submit bulk procurement basket, timed out after 30 seconds with 504 error response.",
+    "priority": "CRITICAL"
   }
 ]

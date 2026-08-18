@@ -1,50 +1,155 @@
 [
   {
-    "timestamp": "2026-08-18T10:01:15Z",
-    "component": "payment-api",
+    "log_id": "LOG-1001",
+    "timestamp": "2026-08-18T13:50:15Z",
+    "service": "checkout-service",
     "level": "INFO",
-    "message": "Service starting up on port 8080. Active profiles: prod."
+    "logger": "OrderController",
+    "message": "Processed checkout session sess_981240 in 88ms - Status: 200 OK",
+    "metadata": { "session_id": "sess_981240", "duration_ms": 88, "status_code": 200 }
   },
   {
-    "timestamp": "2026-08-18T10:03:30Z",
-    "component": "payment-api",
+    "log_id": "LOG-1002",
+    "timestamp": "2026-08-18T13:52:40Z",
+    "service": "payment-service",
     "level": "INFO",
-    "message": "Connection established to database host db-primary-01.internal."
+    "logger": "PaymentGatewayClient",
+    "message": "Authorization successful for transaction tx_884210 via Stripe Provider in 165ms",
+    "metadata": { "tx_id": "tx_884210", "provider": "Stripe", "latency_ms": 165 }
   },
   {
-    "timestamp": "2026-08-18T10:05:00Z",
-    "component": "payment-api",
-    "level": "WARNING",
-    "message": "Database connection pool utilization at 85% (170/200 active connections)."
+    "log_id": "LOG-1003",
+    "timestamp": "2026-08-18T13:56:10Z",
+    "service": "checkout-service",
+    "level": "INFO",
+    "logger": "K8sLifecycle",
+    "message": "Pod checkout-service-7d89b-xk49p received SIGTERM during rolling deployment",
+    "metadata": { "pod": "checkout-service-7d89b-xk49p", "signal": "SIGTERM" }
   },
   {
-    "timestamp": "2026-08-18T10:07:45Z",
-    "component": "payment-api",
-    "level": "WARNING",
-    "message": "Database connection pool utilization at 95% (190/200 active connections)."
+    "log_id": "LOG-1004",
+    "timestamp": "2026-08-18T14:00:15Z",
+    "service": "checkout-service",
+    "level": "INFO",
+    "logger": "ApplicationStartup",
+    "message": "Checkout Service v2.14.0 initialization completed. Health probes returning 200 OK.",
+    "metadata": { "version": "v2.14.0", "ready_pods": 12, "healthy": true }
   },
   {
-    "timestamp": "2026-08-18T10:08:12Z",
-    "component": "database",
-    "level": "WARNING",
-    "message": "PostgreSQL: Client connection limit reached. 200 clients already connected. Rejecting new connections."
+    "log_id": "LOG-1005",
+    "timestamp": "2026-08-18T14:02:30Z",
+    "service": "checkout-service",
+    "level": "INFO",
+    "logger": "OrderController",
+    "message": "Processed checkout session sess_981275 in 92ms - Status: 200 OK",
+    "metadata": { "session_id": "sess_981275", "duration_ms": 92, "status_code": 200 }
   },
   {
-    "timestamp": "2026-08-18T10:09:00Z",
-    "component": "payment-api",
+    "log_id": "LOG-1006",
+    "timestamp": "2026-08-18T14:05:00Z",
+    "service": "inventory-service",
+    "level": "INFO",
+    "logger": "CatalogSyncWorker",
+    "message": "Routine catalog inventory reconciliation job completed: 1200 SKU items synchronized in 420ms.",
+    "metadata": { "job_id": "job_sync_1405", "synced_items": 1200, "duration_ms": 420 }
+  },
+  {
+    "log_id": "LOG-1007",
+    "timestamp": "2026-08-18T14:09:30Z",
+    "service": "checkout-service",
+    "level": "INFO",
+    "logger": "CacheManager",
+    "message": "Dynamic configuration reloaded. In-memory cart cache max capacity expanded to 50,000 items (TTL: 3600s).",
+    "metadata": { "cart_cache_max_items": 50000, "cache_ttl_seconds": 3600, "reload_type": "hot_reload" }
+  },
+  {
+    "log_id": "LOG-1008",
+    "timestamp": "2026-08-18T14:11:45Z",
+    "service": "checkout-service",
+    "level": "INFO",
+    "logger": "CartCacheStore",
+    "message": "Cache item count reached 18,420 entries; resident heap usage growing at 42MB/min.",
+    "metadata": { "cache_entries": 18420, "heap_used_mb": 1380 }
+  },
+  {
+    "log_id": "LOG-1009",
+    "timestamp": "2026-08-18T14:13:20Z",
+    "service": "checkout-service",
+    "level": "WARN",
+    "logger": "MemoryMonitor",
+    "message": "Heap utilization crossed 85% warning threshold: resident 1,740MB / 2,048MB limit.",
+    "metadata": { "heap_utilization_pct": 85.0, "heap_used_mb": 1740, "heap_max_mb": 2048 }
+  },
+  {
+    "log_id": "LOG-1010",
+    "timestamp": "2026-08-18T14:14:55Z",
+    "service": "checkout-service",
+    "level": "WARN",
+    "logger": "GCWatcher",
+    "message": "Excessive GC pause detected: ConcurrentMarkSweep Major GC cycle took 2,420ms. Application threads frozen.",
+    "metadata": { "gc_type": "Major GC", "pause_duration_ms": 2420, "stalled_threads": 16 }
+  },
+  {
+    "log_id": "LOG-1011",
+    "timestamp": "2026-08-18T14:15:40Z",
+    "service": "checkout-service",
+    "level": "WARN",
+    "logger": "GCWatcher",
+    "message": "Consecutive Stop-the-World full GC pause detected: 3,820ms elapsed during OldGen compaction.",
+    "metadata": { "gc_type": "Full GC (OldGen)", "pause_duration_ms": 3820, "heap_freed_mb": 42 }
+  },
+  {
+    "log_id": "LOG-1012",
+    "timestamp": "2026-08-18T14:16:15Z",
+    "service": "checkout-service",
+    "level": "WARN",
+    "logger": "ThreadPoolExecutor",
+    "message": "Worker thread pool exhaustion: 96/100 threads busy, task backlog queue reached 480 pending requests.",
+    "metadata": { "active_threads": 96, "max_threads": 100, "queue_depth": 480 }
+  },
+  {
+    "log_id": "LOG-1013",
+    "timestamp": "2026-08-18T14:17:10Z",
+    "service": "checkout-service",
     "level": "ERROR",
-    "message": "Error: Connection acquisition timeout after 5000ms. Request path: /checkout/pay"
+    "logger": "HttpDispatcher",
+    "message": "Request timeout: POST /api/v1/checkout/submit failed after 5,000ms client timeout threshold.",
+    "metadata": { "endpoint": "/api/v1/checkout/submit", "duration_ms": 5002, "status_code": 504 }
   },
   {
-    "timestamp": "2026-08-18T10:11:30Z",
-    "component": "payment-api",
+    "log_id": "LOG-1014",
+    "timestamp": "2026-08-18T14:18:25Z",
+    "service": "checkout-service",
     "level": "ERROR",
-    "message": "SQLException: Cannot get connection from pool. Timeout waiting for idle object."
+    "logger": "HttpDispatcher",
+    "message": "HTTP 504 Gateway Timeout returned to upstream ingress proxy for checkout session sess_981410.",
+    "metadata": { "session_id": "sess_981410", "error": "GatewayTimeout", "status_code": 504 }
   },
   {
-    "timestamp": "2026-08-18T10:14:10Z",
-    "component": "web-gateway",
+    "log_id": "LOG-1015",
+    "timestamp": "2026-08-18T14:19:10Z",
+    "service": "payment-service",
+    "level": "INFO",
+    "logger": "PaymentGatewayClient",
+    "message": "Health check OK: Stripe & Adyen webhook connections nominal, p99=172ms.",
+    "metadata": { "status": "UP", "active_connections": 14 }
+  },
+  {
+    "log_id": "LOG-1016",
+    "timestamp": "2026-08-18T14:22:00Z",
+    "service": "checkout-service",
     "level": "ERROR",
-    "message": "Upstream timeout: 504 Gateway Timeout on POST /api/v1/payment/checkout"
+    "logger": "OrderController",
+    "message": "Internal Server Error 500: Thread pool queue saturated, rejected execution of CartCheckoutTask.",
+    "metadata": { "error": "RejectedExecutionException", "status_code": 500 }
+  },
+  {
+    "log_id": "LOG-1017",
+    "timestamp": "2026-08-18T14:25:10Z",
+    "service": "inventory-service",
+    "level": "INFO",
+    "logger": "StockReservationService",
+    "message": "Stock reservation ping check: latency 24ms, zero queue congestion.",
+    "metadata": { "latency_ms": 24, "status": "HEALTHY" }
   }
 ]
