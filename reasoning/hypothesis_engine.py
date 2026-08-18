@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER C (AI Reasoning Engine)
+# Responsibility: Generate competing root-cause hypotheses using LLM or fallback mock data
+# ==========================================
+
 import os
 import json
 import google.generativeai as genai

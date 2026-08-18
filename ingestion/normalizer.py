@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER A (Ingestion & Data)
+# Responsibility: Normalize raw signals to canonical schema
+# ==========================================
+
 import os
 import pandas as pd
 from typing import List

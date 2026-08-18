@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER B (Correlation Engine)
+# Responsibility: Correlate signals using time + namespace rules
+# ==========================================
+
 from typing import List
 from datetime import datetime, timedelta
 from utils.schemas import NormalizedSignal

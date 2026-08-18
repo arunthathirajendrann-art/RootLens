@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER C (AI Reasoning Engine)
+# Responsibility: Define system prompts and JSON templates
+# ==========================================
+
 # Prompt templates for root cause analysis, diagnostics, and recovery plans
 
 HYPOTHESIS_PROMPT = """

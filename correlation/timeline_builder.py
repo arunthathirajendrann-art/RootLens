@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER B (Correlation Engine)
+# Responsibility: Sort and format unified incident timeline
+# ==========================================
+
 from typing import List
 from utils.schemas import NormalizedSignal
 from utils.timestamp import format_datetime

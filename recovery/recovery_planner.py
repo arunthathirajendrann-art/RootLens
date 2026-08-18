@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER C (Triage & Recovery)
+# Responsibility: Recommend playbooks with risk assessments
+# ==========================================
+
 import os
 import json
 import google.generativeai as genai

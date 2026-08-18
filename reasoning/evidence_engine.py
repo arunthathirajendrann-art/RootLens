@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER C (AI Reasoning Engine)
+# Responsibility: Extract signals as evidence metrics (FOR/AGAINST)
+# ==========================================
+
 from typing import List, Dict, Any
 from utils.schemas import NormalizedSignal, Evidence
 

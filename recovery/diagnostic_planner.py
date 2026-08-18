@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER C (Triage & Recovery)
+# Responsibility: Generate diagnostic verification procedures
+# ==========================================
+
 import os
 import json
 import google.generativeai as genai

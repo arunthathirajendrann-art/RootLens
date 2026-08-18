@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER A (Ingestion & Data)
+# Responsibility: Load JSON/CSV sources from filesystem
+# ==========================================
+
 import os
 import json
 import pandas as pd

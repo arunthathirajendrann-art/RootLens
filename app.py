@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER D (UI & Operator Gate)
+# Responsibility: Orchestrate visual timeline tabs and dashboards
+# ==========================================
+
 import streamlit as st
 import os
 import json

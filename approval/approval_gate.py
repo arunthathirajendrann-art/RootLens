@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER D (UI & Operator Gate)
+# Responsibility: Record operator decisions (APPROVED/REJECTED)
+# ==========================================
+
 from datetime import datetime
 from typing import Dict, Any
 

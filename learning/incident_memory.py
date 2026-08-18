@@ -1,3 +1,8 @@
+# ==========================================
+# OWNED BY: MEMBER D (UI & Operator Gate)
+# Responsibility: Save operational outcomes back to historical memory
+# ==========================================
+
 import os
 import json
 from datetime import datetime
