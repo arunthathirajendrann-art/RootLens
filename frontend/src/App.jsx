@@ -106,13 +106,13 @@ function LineChart({ title, data, color }) {
 }
 
 export default function App() {
+  const [activePage, setActivePage] = useState('triage'); // 'triage', 'history', 'config'
   const [selectedService, setSelectedService] = useState('payment-service');
   const [selectedPlaybookIndex, setSelectedPlaybookIndex] = useState(0);
   const [operator, setOperator] = useState('site-reliability-lead@tcs.com');
   const [comments, setComments] = useState('');
   const [gateLog, setGateLog] = useState(null);
   const [pastIncidents, setPastIncidents] = useState(INITIAL_PAST_INCIDENTS);
-  const [showHistory, setShowHistory] = useState(false);
 
   const selectedPlaybook = RECOVERY_PLANS[selectedPlaybookIndex];
   const serviceMetrics = METRIC_HISTORY[selectedService] || METRIC_HISTORY['payment-service'];
@@ -142,229 +142,282 @@ export default function App() {
   };
 
   return (
-    <div className="app-container">
-      {/* Top Header */}
-      <header className="app-header">
-        <div className="app-title-group">
-          <h2 className="app-title">RootLens Incident Control</h2>
-          <span className="status-badge">Active Outage</span>
+    <div className="app-layout">
+      {/* Sidebar Navigation */}
+      <aside className="sidebar">
+        <div className="sidebar-title">
+          <span>🛡️ RootLens</span>
         </div>
-        <div className="meta-info">
-          Active ID: <strong>ACT-0921</strong> | Target: <strong>payment-service</strong>
-        </div>
-      </header>
+        <ul className="sidebar-menu">
+          <li 
+            className={`sidebar-item ${activePage === 'triage' ? 'active' : ''}`}
+            onClick={() => setActivePage('triage')}
+          >
+            🚨 Active Triage
+          </li>
+          <li 
+            className={`sidebar-item ${activePage === 'history' ? 'active' : ''}`}
+            onClick={() => setActivePage('history')}
+          >
+            📚 Past Resolutions
+          </li>
+          <li 
+            className={`sidebar-item ${activePage === 'config' ? 'active' : ''}`}
+            onClick={() => setActivePage('config')}
+          >
+            ⚙️ System Config
+          </li>
+        </ul>
+      </aside>
 
-      {/* Main Grid */}
-      <main className="dashboard-grid">
+      {/* Main Content Area */}
+      <main className="main-content">
         
-        {/* Left Column: Actions, Reasoning, Gate */}
-        <div className="dashboard-column">
-          
-          {/* Section 1: Human Approval Gate */}
-          <section className="card">
-            <h3 className="section-title">🛡️ Operational Gate</h3>
-            
-            <div className="form-group">
-              <label className="form-label">Select Recovery Playbook</label>
-              <select 
-                className="form-select"
-                value={selectedPlaybookIndex}
-                onChange={(e) => setSelectedPlaybookIndex(Number(e.target.value))}
-              >
-                {RECOVERY_PLANS.map((p, idx) => (
-                  <option key={idx} value={idx}>{p.action} (Risk: {p.risk})</option>
-                ))}
-              </select>
-            </div>
+        {/* Header */}
+        <header className="app-header">
+          <div className="app-title-group">
+            <h2 className="app-title">
+              {activePage === 'triage' ? 'Incident Commander Dashboard' : 
+               activePage === 'history' ? 'Operational Memory Index' : 
+               'System Configuration & Deploys'}
+            </h2>
+          </div>
+          <div className="meta-info">
+            Service: <strong>payment-service</strong> | Environment: <strong>prod-01</strong>
+          </div>
+        </header>
 
-            <div style={{ marginBottom: '16px', fontSize: '0.85rem' }}>
-              <p style={{ color: '#475569', marginBottom: '6px' }}><strong>Reasoning:</strong> {selectedPlaybook.reason}</p>
-              <p>
-                <strong>Risk Profile:</strong>{' '}
-                <span style={{ 
-                  color: selectedPlaybook.risk === 'HIGH' ? '#ef4444' : selectedPlaybook.risk === 'MEDIUM' ? '#f59e0b' : '#10b981',
-                  fontWeight: '600'
-                }}>
-                  {selectedPlaybook.risk}
-                </span>
-              </p>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Execution Instructions (Dry-run preview)</label>
-              <div className="terminal-block">$ {selectedPlaybook.instructions}</div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '12px' }}>
-              <div className="form-group">
-                <label className="form-label">Operator credentials</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  value={operator}
-                  onChange={(e) => setOperator(e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Approval justification / comments</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="Reason for decision..."
-                  value={comments}
-                  onChange={(e) => setComments(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="btn-group">
-              <button className="btn btn-primary" onClick={() => handleAction('APPROVED')}>✅ APPROVE & EXECUTE</button>
-              <button className="btn btn-danger" onClick={() => handleAction('REJECTED')}>❌ REJECT & ABORT</button>
-              <button className="btn btn-secondary" onClick={() => handleAction('MORE_DIAGNOSTICS')}>🔍 REQUEST EVIDENCE</button>
-            </div>
-
-            {gateLog && (
-              <div className="logs-block">
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>
-                  <span>Execution Status Logs</span>
-                  <span style={{ 
-                    color: gateLog.status === 'APPROVED' ? '#10b981' : gateLog.status === 'REJECTED' ? '#ef4444' : '#f59e0b' 
-                  }}>
-                    {gateLog.status}
-                  </span>
+        {/* Page 1: Active Triage */}
+        {activePage === 'triage' && (
+          <div>
+            {/* Real World Critical Alert Trigger Banner */}
+            <div className="alert-banner">
+              <div style={{ fontSize: '1.25rem' }}>⚠️</div>
+              <div>
+                <div className="alert-banner-title">CRITICAL INCIDENT SIGNAL DETECTED</div>
+                <div className="alert-banner-desc">
+                  At <strong>10:10:00 UTC</strong>, the monitoring system intercepted a <strong>DBPoolExhausted</strong> signal from <strong>payment-service</strong>. Response latency immediately spiked to <strong>9,200ms</strong>, resulting in checkout drop-offs. Triage checklist initiated.
                 </div>
-                <p style={{ fontSize: '0.8rem', color: '#475569' }}>
-                  {gateLog.status === 'APPROVED' ? `[SUCCESS] ${gateLog.action} successfully dispatched at ${gateLog.timestamp}. Memory database updated.` : 
-                   gateLog.status === 'REJECTED' ? `[ABORTED] Action rejected by operator.` : 
-                   `[HOLD] Operator requesting more diagnostic evidence.`}
-                </p>
               </div>
-            )}
-          </section>
+            </div>
 
-          {/* Section 2: AI Hypotheses */}
-          <section className="card">
-            <h3 className="section-title">🧠 AI Root-Cause Analysis</h3>
-            {INITIAL_HYPOTHESES.map((hyp, idx) => (
-              <div key={idx} className="hypothesis-card">
-                <div className="hypothesis-header">
-                  <span className="hypothesis-title">{hyp.title}</span>
-                  <span className="confidence-badge">Confidence: {intPercent(hyp.confidence)}%</span>
-                </div>
-                <p className="hypothesis-desc">{hyp.description}</p>
-                <div className="evidence-columns">
-                  <div>
-                    <div className="evidence-header">✔️ Evidence FOR</div>
-                    <ul className="evidence-list">
-                      {hyp.evidence_for.map((ev, i) => (
-                        <li key={i} className="evidence-item evidence-pro">- {ev}</li>
+            <div className="dashboard-grid">
+              
+              {/* Left Column: Actions, Hypotheses, Diagnostics */}
+              <div className="dashboard-column">
+                
+                {/* Gate portal in the front */}
+                <section className="card">
+                  <h3 className="section-title">🛡️ Remediation Portal</h3>
+                  <div className="form-group">
+                    <label className="form-label">Select Recovery Playbook</label>
+                    <select 
+                      className="form-select"
+                      value={selectedPlaybookIndex}
+                      onChange={(e) => setSelectedPlaybookIndex(Number(e.target.value))}
+                    >
+                      {RECOVERY_PLANS.map((p, idx) => (
+                        <option key={idx} value={idx}>{p.action} (Risk: {p.risk})</option>
                       ))}
-                    </ul>
+                    </select>
                   </div>
-                  <div>
-                    <div className="evidence-header">❌ Evidence AGAINST</div>
-                    <ul className="evidence-list">
-                      {hyp.evidence_against.map((ev, i) => (
-                        <li key={i} className="evidence-item evidence-con">- {ev}</li>
-                      ))}
-                    </ul>
+
+                  <div style={{ marginBottom: '16px', fontSize: '0.85rem' }}>
+                    <p style={{ color: '#475569', marginBottom: '6px' }}><strong>Reasoning:</strong> {selectedPlaybook.reason}</p>
+                    <p>
+                      <strong>Risk Profile:</strong>{' '}
+                      <span style={{ 
+                        color: selectedPlaybook.risk === 'HIGH' ? '#ef4444' : selectedPlaybook.risk === 'MEDIUM' ? '#f59e0b' : '#10b981',
+                        fontWeight: '600'
+                      }}>
+                        {selectedPlaybook.risk}
+                      </span>
+                    </p>
                   </div>
-                </div>
-              </div>
-            ))}
-          </section>
 
-          {/* Section 3: Diagnostics */}
-          <section className="card">
-            <h3 className="section-title">🔍 Verification Diagnostics</h3>
-            {DIAGNOSTICS.map((d, idx) => (
-              <div key={idx} style={{ marginBottom: '12px' }}>
-                <div style={{ display: 'flex', justifySelf: 'space-between', fontSize: '0.85rem', fontWeight: 600 }}>
-                  <span>Step {d.step}: {d.purpose}</span>
-                  <span style={{ 
-                    fontSize: '0.7rem', 
-                    marginLeft: '8px',
-                    color: d.priority === 'HIGH' ? '#b91c1c' : '#92400e',
-                    backgroundColor: d.priority === 'HIGH' ? '#fef2f2' : '#fffbeb',
-                    padding: '1px 6px',
-                    borderRadius: '4px'
-                  }}>{d.priority}</span>
-                </div>
-                <div className="terminal-block">$ {d.action}</div>
-              </div>
-            ))}
-          </section>
-        </div>
-
-        {/* Right Column: Timeline & Metrics */}
-        <div className="dashboard-column">
-          
-          {/* Section 1: Timeline */}
-          <section className="card" style={{ maxHeight: '580px', overflowY: 'auto' }}>
-            <h3 className="section-title">📊 Correlated Event Log</h3>
-            {INITIAL_TIMELINE.map((evt, idx) => (
-              <div key={idx} className={`timeline-item ${evt.severity.toLowerCase()} ${evt.type}`}>
-                <div className="timeline-header">
-                  <div>
-                    <span className={`timeline-badge bg-${evt.type}`}>{evt.type}</span>
-                    <span className="timeline-comp">{evt.service}</span>
+                  <div className="form-group">
+                    <label className="form-label">Execution Instructions</label>
+                    <div className="terminal-block">$ {selectedPlaybook.instructions}</div>
                   </div>
-                  <span className="timeline-time">{evt.time}</span>
-                </div>
-                <p className="timeline-msg">{evt.msg}</p>
-              </div>
-            ))}
-          </section>
 
-          {/* Section 2: Metrics */}
-          <section className="card">
-            <h3 className="section-title">📉 Telemetry Metrics</h3>
-            
-            <div className="form-group" style={{ marginBottom: '20px' }}>
-              <label className="form-label">Service Focus Filter</label>
-              <select 
-                className="form-select"
-                value={selectedService}
-                onChange={(e) => setSelectedService(e.target.value)}
-              >
-                <option value="payment-service">payment-service (Active Outage)</option>
-                <option value="checkout-service">checkout-service (Impacted)</option>
-              </select>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '12px' }}>
+                    <div className="form-group">
+                      <label className="form-label">Operator login</label>
+                      <input 
+                        type="text" 
+                        className="form-input" 
+                        value={operator}
+                        onChange={(e) => setOperator(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Gate justification / notes</label>
+                      <input 
+                        type="text" 
+                        className="form-input" 
+                        placeholder="Provide details..."
+                        value={comments}
+                        onChange={(e) => setComments(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="btn-group">
+                    <button className="btn btn-primary" onClick={() => handleAction('APPROVED')}>✅ APPROVE & RUN</button>
+                    <button className="btn btn-danger" onClick={() => handleAction('REJECTED')}>❌ REJECT</button>
+                    <button className="btn btn-secondary" onClick={() => handleAction('MORE_DIAGNOSTICS')}>🔍 REQUEST PROOF</button>
+                  </div>
+
+                  {gateLog && (
+                    <div className="logs-block">
+                      <div style={{ display: 'flex', justifySelf: 'space-between', fontSize: '0.8rem', fontWeight: 600, marginBottom: '4px' }}>
+                        <span>Mitigation Execution Log</span>
+                        <span style={{ 
+                          color: gateLog.status === 'APPROVED' ? '#10b981' : gateLog.status === 'REJECTED' ? '#ef4444' : '#f59e0b' 
+                        }}>
+                          {gateLog.status}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '0.8rem', color: '#475569' }}>
+                        {gateLog.status === 'APPROVED' ? `[RUNNING] Rollback commands successfully triggered. Incident memory appended.` : 
+                         gateLog.status === 'REJECTED' ? `[ABORTED] Operation terminated by SRE lead.` : 
+                         `[HOLD] Additional diagnostics verification requested.`}
+                      </p>
+                    </div>
+                  )}
+                </section>
+
+                {/* Hypotheses */}
+                <section className="card">
+                  <h3 className="section-title">🧠 Competing Root-Causes</h3>
+                  {INITIAL_HYPOTHESES.map((hyp, idx) => (
+                    <div key={idx} className="hypothesis-card">
+                      <div className="hypothesis-header">
+                        <span className="hypothesis-title">{hyp.title}</span>
+                        <span className="confidence-badge">Confidence: {intPercent(hyp.confidence)}%</span>
+                      </div>
+                      <p className="hypothesis-desc">{hyp.description}</p>
+                      <div className="evidence-columns">
+                        <div>
+                          <div className="evidence-header">✔️ Evidence FOR</div>
+                          <ul className="evidence-list">
+                            {hyp.evidence_for.map((ev, i) => (
+                              <li key={i} className="evidence-item evidence-pro">- {ev}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <div className="evidence-header">❌ Evidence AGAINST</div>
+                          <ul className="evidence-list">
+                            {hyp.evidence_against.map((ev, i) => (
+                              <li key={i} className="evidence-item evidence-con">- {ev}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </section>
+              </div>
+
+              {/* Right Column: Timeline & Metrics */}
+              <div className="dashboard-column">
+                <section className="card" style={{ maxHeight: '420px', overflowY: 'auto' }}>
+                  <h3 className="section-title">📊 Signals Timeline</h3>
+                  {INITIAL_TIMELINE.map((evt, idx) => (
+                    <div key={idx} className={`timeline-item ${evt.severity.toLowerCase()} ${evt.type}`}>
+                      <div className="timeline-header">
+                        <div>
+                          <span className={`timeline-badge bg-${evt.type}`}>{evt.type}</span>
+                          <span className="timeline-comp">{evt.service}</span>
+                        </div>
+                        <span className="timeline-time">{evt.time}</span>
+                      </div>
+                      <p className="timeline-msg">{evt.msg}</p>
+                    </div>
+                  ))}
+                </section>
+
+                <section className="card">
+                  <h3 className="section-title">📉 Telemetry Trends</h3>
+                  <div className="form-group" style={{ marginBottom: '16px' }}>
+                    <select 
+                      className="form-select"
+                      value={selectedService}
+                      onChange={(e) => setSelectedService(e.target.value)}
+                    >
+                      <option value="payment-service">payment-service (Active Outage)</option>
+                      <option value="checkout-service">checkout-service (Impacted)</option>
+                    </select>
+                  </div>
+                  <LineChart title="CPU Utilization %" data={serviceMetrics.cpu} color="#2563eb" />
+                  <LineChart title="p99 Latency (ms)" data={serviceMetrics.latency} color="#f59e0b" />
+                </section>
+              </div>
             </div>
-
-            <LineChart title="CPU Utilization %" data={serviceMetrics.cpu} color="#2563eb" />
-            <LineChart title="p99 Response Latency (ms)" data={serviceMetrics.latency} color="#f59e0b" />
-            <LineChart title="Error Rate %" data={serviceMetrics.errorRate} color="#d946ef" />
-          </section>
-        </div>
-      </main>
-
-      {/* RAG Memory section */}
-      <footer className="memory-section">
-        <div className="memory-toggle" onClick={() => setShowHistory(!showHistory)}>
-          <span>📚 RAG Operational Memory Log Reference</span>
-          <span>{showHistory ? '▼' : '▶'}</span>
-        </div>
-        
-        {showHistory && (
-          <div className="memory-grid">
-            {pastIncidents.map((inc, idx) => (
-              <div key={idx} className="memory-card">
-                <div className="memory-card-header">
-                  <span>Incident {inc.id} ({inc.component})</span>
-                  <span style={{ color: '#166534', fontSize: '0.75rem', fontWeight: 600 }}>{inc.status}</span>
-                </div>
-                <div className="memory-body">
-                  <p><strong>Symptoms:</strong> {inc.symptoms}</p>
-                  <p><strong>Root Cause:</strong> {inc.root_cause}</p>
-                  <p><strong>Resolution Action:</strong> {inc.recovery_action}</p>
-                  <p style={{ color: '#64748b', fontStyle: 'italic', marginTop: '4px' }}><strong>Operator Notes:</strong> {inc.operator_notes}</p>
-                </div>
-              </div>
-            ))}
           </div>
         )}
-      </footer>
+
+        {/* Page 2: Past Resolutions (Operational Memory) */}
+        {activePage === 'history' && (
+          <div>
+            <div style={{ marginBottom: '20px', fontSize: '0.9rem', color: '#475569' }}>
+              These resolved incidents are pulled automatically by the AI RAG engine to compare with live outage signatures.
+            </div>
+            <div className="memory-grid">
+              {pastIncidents.map((inc, idx) => (
+                <div key={idx} className="memory-card">
+                  <div className="memory-card-header">
+                    <span>Incident {inc.id} - {inc.component}</span>
+                    <span style={{ color: '#166534', backgroundColor: '#f0fdf4', padding: '2px 8px', borderRadius: '4px' }}>{inc.status}</span>
+                  </div>
+                  <div className="memory-body">
+                    <p style={{ marginBottom: '6px' }}><strong>Outage Symptoms:</strong> {inc.symptoms}</p>
+                    <p style={{ marginBottom: '6px' }}><strong>Verified Root Cause:</strong> {inc.root_cause}</p>
+                    <p style={{ marginBottom: '6px' }}><strong>Mitigation Executed:</strong> {inc.recovery_action}</p>
+                    <p style={{ color: '#64748b', fontStyle: 'italic', marginTop: '10px', borderTop: '1px dashed #e2e8f0', paddingTop: '6px' }}><strong>SRE Notes:</strong> {inc.operator_notes}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Page 3: System Config */}
+        {activePage === 'config' && (
+          <div style={{ maxWidth: '800px' }}>
+            <section className="card">
+              <h3 className="section-title">⚙️ Deployment History</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ borderLeft: '3px solid #a855f7', paddingLeft: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, fontSize: '0.9rem' }}>
+                    <span>DEP-772 - payment-service (v1.4.2)</span>
+                    <span style={{ color: '#64748b', fontSize: '0.8rem' }}>10:00:00 UTC</span>
+                  </div>
+                  <p style={{ fontSize: '0.85rem', color: '#475569', marginTop: '4px' }}>Changes: Optimized SQL queries and connection thread pooling inside transactions controllers.</p>
+                </div>
+                <div style={{ borderLeft: '3px solid #cbd5e1', paddingLeft: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, fontSize: '0.9rem' }}>
+                    <span>DEP-771 - auth-service (v2.1.0)</span>
+                    <span style={{ color: '#64748b', fontSize: '0.8rem' }}>09:15:00 UTC</span>
+                  </div>
+                  <p style={{ fontSize: '0.85rem', color: '#475569', marginTop: '4px' }}>Changes: Patched minor JWT validations cache pool handles.</p>
+                </div>
+              </div>
+            </section>
+            
+            <section className="card">
+              <h3 className="section-title">🛠️ Active Diagnostics Playbook</h3>
+              {DIAGNOSTICS.map((d, idx) => (
+                <div key={idx} style={{ marginBottom: '12px' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>Step {d.step}: {d.purpose}</div>
+                  <div className="terminal-block">$ {d.action}</div>
+                </div>
+              ))}
+            </section>
+          </div>
+        )}
+      </main>
     </div>
   );
 }
