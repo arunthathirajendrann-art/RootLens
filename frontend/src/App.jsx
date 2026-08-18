@@ -244,7 +244,7 @@ export default function App() {
                       onChange={(e) => setSelectedPlaybookIndex(Number(e.target.value))}
                     >
                       {availablePlaybooks.map((p, idx) => (
-                        <option key={idx} value={idx}>{idx === 0 ? '⭐ [RECOMMENDED] ' : ''}{p.action} (Risk: {p.risk})</option>
+                        <option key={idx} value={idx}>{p.action} (Risk: {p.risk})</option>
                       ))}
                     </select>
                   </div>
