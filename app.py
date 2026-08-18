@@ -22,37 +22,39 @@ import ui.hypothesis_view as hypothesis_view
 import ui.diagnostic_view as diagnostic_view
 import ui.approval_view as approval_view
 
-# Page configurations
+# Page configurations for a clean interface
 st.set_page_config(
-    page_title="Incident Commander AI",
-    page_icon="🚨",
+    page_title="RootLens Incident Commander",
+    page_icon="🛡️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# Custom premium styling using glassmorphism and modern colors
+# Custom minimalist light-theme CSS
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
     
     html, body, [class*="css"] {
-        font-family: 'Outfit', sans-serif;
+        font-family: 'Inter', sans-serif;
+        color: #1e293b;
+        background-color: #ffffff;
     }
     
+    /* Clean, soft grey card styling */
     .metric-card {
-        background: rgba(30, 41, 59, 0.45);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 15px;
-        box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.15);
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
     }
     
     .timeline-item {
-        border-left: 3px solid #3b82f6;
-        padding-left: 20px;
-        margin-bottom: 20px;
+        border-left: 2px solid #cbd5e1;
+        padding-left: 16px;
+        margin-bottom: 14px;
         position: relative;
     }
     
@@ -73,63 +75,60 @@ st.markdown("""
     }
     
     .timeline-time {
-        font-size: 0.85rem;
-        color: #94a3b8;
-        font-weight: 600;
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 500;
     }
     
     .timeline-source {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         text-transform: uppercase;
-        font-weight: 800;
+        font-weight: 700;
         padding: 2px 6px;
         border-radius: 4px;
-        margin-right: 8px;
+        margin-right: 6px;
     }
     
-    .bg-critical { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
-    .bg-warning { background-color: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
-    .bg-info { background-color: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
-    .bg-deploy { background-color: rgba(168, 85, 247, 0.2); color: #a855f7; border: 1px solid #a855f7; }
-    .bg-complaint { background-color: rgba(236, 72, 153, 0.2); color: #ec7299; border: 1px solid #ec7299; }
+    .bg-critical { background-color: #fef2f2; color: #991b1b; border: 1px solid #fee2e2; }
+    .bg-warning { background-color: #fffbeb; color: #92400e; border: 1px solid #fef3c7; }
+    .bg-info { background-color: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
+    .bg-deploy { background-color: #faf5ff; color: #6b21a8; border: 1px solid #f3e8ff; }
+    .bg-complaint { background-color: #fdf2f8; color: #9d174d; border: 1px solid #fce7f3; }
     
     .terminal-block {
         font-family: 'JetBrains Mono', monospace;
-        background: #0f172a;
-        color: #38bdf8;
-        padding: 15px;
-        border-radius: 8px;
-        border-left: 4px solid #0ea5e9;
-        margin: 10px 0;
-        font-size: 0.9rem;
-        overflow-x: auto;
+        background: #f1f5f9;
+        color: #0f172a;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        margin: 8px 0;
+        font-size: 0.85rem;
     }
     
     .hypothesis-card {
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 20px;
-        transition: transform 0.2s ease;
-    }
-    
-    .hypothesis-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(59, 130, 246, 0.4);
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Main Title & Subheader
 st.markdown("""
-<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
-    <h1 style="margin:0; font-weight:800; background: linear-gradient(135deg, #6366f1, #3b82f6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        🚨 Incident Commander AI
-    </h1>
-    <span style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase;">
-        Active Outage Triage
-    </span>
+<div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <h2 style="margin:0; font-weight:700; color: #0f172a;">RootLens Incident Control</h2>
+        <span style="background-color: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">
+            ACTIVE INCIDENT
+        </span>
+    </div>
+    <div style="color: #64748b; font-size: 0.85rem;">
+        Active ID: <strong>ACT-0921</strong> | Target: <strong>payment-service</strong>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -150,21 +149,6 @@ if 'all_signals' not in st.session_state:
 if 'timeline' not in st.session_state:
     st.session_state.timeline = build_chronological_timeline(st.session_state.all_signals)
 
-# Sidebar settings
-with st.sidebar:
-    st.markdown("### ⚙️ Engine Settings")
-    if is_gemini_active():
-        st.success("Gemini API Status: Connected")
-    else:
-        st.warning("No API Key detected. Using local deterministic models.")
-        
-    st.markdown("---")
-    st.markdown("### 💡 Active Scenario details")
-    st.info("**Incident ID:** ACT-0921\n\n**Impact:** Checkout Failure / 500 Server Errors on Payment gateway.")
-    st.markdown("---")
-    st.markdown("Built for TCS Hackathon 2026")
-
-# Load current historical incidents
 past_incidents = load_historical_memory()
 
 # Setup reasoning data once
@@ -177,69 +161,61 @@ if 'hypotheses_data' not in st.session_state:
         st.session_state.diagnostics_data = plan_diagnostics(timeline_str, json.dumps(st.session_state.hypotheses_data))
         st.session_state.recovery_data = plan_recovery(timeline_str, json.dumps(st.session_state.hypotheses_data))
 
-tab_dash, tab_reason, tab_recovery, tab_history = st.tabs([
-    "📊 Telemetry & Timeline", 
-    "🧠 AI Reasoning Hub", 
-    "🛡️ Human Approval & Action Gate", 
-    "📚 Operational Memory"
-])
+# Layout the page cleanly - Triage & Approval right in the front
+col_left, col_right = st.columns([1, 1], gap="medium")
 
-# Tab 1: Timeline
-with tab_dash:
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        timeline_view.render_timeline(st.session_state.timeline)
-    with col2:
-        st.subheader("Metric Anomalies")
-        metrics_csv_path = os.path.join(os.path.dirname(__file__), "data", "metrics.csv")
-        if os.path.exists(metrics_csv_path):
-            df_metrics = pd.read_csv(metrics_csv_path)
-            
-            # Service filter selectbox
-            services = df_metrics['service'].unique().tolist()
-            selected_service = st.selectbox("Filter Metrics by Service", services, index=services.index("payment-service") if "payment-service" in services else 0)
-            df_svc = df_metrics[df_metrics['service'] == selected_service]
-            
-            st.write(f"CPU Utilization % for {selected_service}")
-            st.line_chart(data=df_svc, x='timestamp', y='cpu_utilization_pct', color="#ef4444")
-            
-            st.write(f"p99 Latency (ms) for {selected_service}")
-            st.line_chart(data=df_svc, x='timestamp', y='p99_latency_ms', color="#f59e0b")
-            
-            st.write(f"Error Rate % for {selected_service}")
-            st.line_chart(data=df_svc, x='timestamp', y='error_rate_pct', color="#a855f7")
-        else:
-            st.info("No metrics file found.")
-
-# Tab 2: AI Reasoning
-with tab_reason:
+# LEFT COLUMN: Approval Gate, AI Hypotheses & Troubleshooting (Action Items)
+with col_left:
+    st.markdown("### 🛡️ Operational Gate")
+    # Interactive portal right in front
+    approval_view.render_approval_portal(st.session_state.recovery_data, st.session_state.hypotheses_data)
+    
+    st.markdown("---")
+    
+    st.markdown("### 🧠 AI Root-Cause Analysis")
     hypothesis_view.render_hypotheses(st.session_state.hypotheses_data)
+    
     st.markdown("---")
     diagnostic_view.render_diagnostics(st.session_state.diagnostics_data)
 
-# Tab 3: Action Gate
-with tab_recovery:
-    approval_view.render_approval_portal(st.session_state.recovery_data, st.session_state.hypotheses_data)
-
-# Tab 4: History list
-with tab_history:
-    st.subheader("Operational Memory (past_incidents.json)")
-    st.markdown("These past incident profiles are dynamically read and injected into Gemini reasoning contexts:")
+# RIGHT COLUMN: Telemetry Signal log, Graphs, & Historical memory database
+with col_right:
+    # Render unified timeline logs
+    timeline_view.render_timeline(st.session_state.timeline)
     
-    # Reload fresh list
+    st.markdown("---")
+    st.subheader("System Metrics")
+    metrics_csv_path = os.path.join(os.path.dirname(__file__), "data", "metrics.csv")
+    if os.path.exists(metrics_csv_path):
+        df_metrics = pd.read_csv(metrics_csv_path)
+        services = df_metrics['service'].unique().tolist()
+        selected_service = st.selectbox("Select Target Service", services, index=services.index("payment-service") if "payment-service" in services else 0)
+        df_svc = df_metrics[df_metrics['service'] == selected_service]
+        
+        st.write(f"CPU Utilization % ({selected_service})")
+        st.line_chart(data=df_svc, x='timestamp', y='cpu_utilization_pct', color="#6366f1")
+        
+        st.write(f"p99 Response Latency ({selected_service})")
+        st.line_chart(data=df_svc, x='timestamp', y='p99_latency_ms', color="#f59e0b")
+    else:
+        st.info("No metrics file found.")
+
+st.markdown("---")
+# Clean collapsible history list to keep page minimal
+with st.expander("📚 Operational Memory Log History (RAG Reference List)"):
     fresh_history = load_historical_memory()
     for inc in fresh_history:
         st.markdown(f"""
         <div class="metric-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <strong>Incident {inc.get('incident_id')} ({inc.get('component')})</strong>
-                <span class="timeline-source bg-info">{inc.get('status')}</span>
+                <span style="font-size:0.75rem; color:#1e293b; background:#f1f5f9; padding:2px 6px; border-radius:4px; font-weight:600;">{inc.get('status')}</span>
             </div>
-            <div style="font-size:0.9rem; color:#cbd5e1;">
-                <p><strong>Symptoms:</strong> {inc.get('symptoms')}</p>
-                <p><strong>Root Cause:</strong> {inc.get('root_cause')}</p>
-                <p><strong>Remediation:</strong> {inc.get('recovery_action')}</p>
-                <p style="color:#94a3b8; font-style:italic;"><strong>Operator Notes:</strong> {inc.get('operator_notes')}</p>
+            <div style="font-size:0.85rem; color:#475569;">
+                <p style="margin:4px 0;"><strong>Symptoms:</strong> {inc.get('symptoms')}</p>
+                <p style="margin:4px 0;"><strong>Root Cause:</strong> {inc.get('root_cause')}</p>
+                <p style="margin:4px 0;"><strong>Remediation:</strong> {inc.get('recovery_action')}</p>
+                <p style="margin:4px 0; color:#64748b; font-style:italic;"><strong>Operator Notes:</strong> {inc.get('operator_notes')}</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
