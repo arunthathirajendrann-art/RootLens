@@ -1,0 +1,32 @@
+[
+  {
+    "incident_id": "INC-2025-1044",
+    "title": "Cart cache OOM latency spike",
+    "service": "checkout-service",
+    "severity": "P1",
+    "occurred_at": "2025-11-14T09:20:00Z",
+    "root_cause": "Dynamic configuration update increased in-memory cart cache limits beyond JVM heap capacity, causing Stop-The-World GC thrashing and request timeouts.",
+    "resolution": "Reverted dynamic cache parameter in configuration service and restored baseline JVM memory headroom.",
+    "tags": ["memory_leak", "cache_config", "gc_pressure", "jvm_tuning", "checkout"]
+  },
+  {
+    "incident_id": "INC-2025-0812",
+    "title": "Payment gateway connection timeout cascade",
+    "service": "payment-service",
+    "severity": "P2",
+    "occurred_at": "2025-08-12T16:45:00Z",
+    "root_cause": "External payment processor API degradation led to connection pool exhaustion on payment service workers.",
+    "resolution": "Activated circuit breaker pattern and routed non-critical transactions to secondary gateway.",
+    "tags": ["third_party", "timeout", "payment", "circuit_breaker"]
+  },
+  {
+    "incident_id": "INC-2026-0205",
+    "title": "Inventory database read-replica replication lag",
+    "service": "inventory-service",
+    "severity": "P2",
+    "occurred_at": "2026-02-05T03:10:00Z",
+    "root_cause": "Unindexed bulk warehouse synchronization query blocked replication workers on PostgreSQL read replica.",
+    "resolution": "Terminated long-running query lock and added compound index on inventory catalog SKU table.",
+    "tags": ["database", "inventory", "replication_lag", "slow_query"]
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "deploy_id": "DEP-4101",
+    "timestamp": "2026-08-17T18:00:00Z",
+    "service": "payment-service",
+    "version": "v3.1.0",
+    "status": "SUCCESS",
+    "environment": "production",
+    "deployed_by": "ci-cd-pipeline",
+    "commit_hash": "c49a1f2",
+    "commit_message": "feat(stripe): upgrade Stripe SDK to v14.2 and refresh webhook endpoints",
+    "canary_passed": true,
+    "rollback_available": true
+  },
+  {
+    "deploy_id": "DEP-4102",
+    "timestamp": "2026-08-18T11:30:00Z",
+    "service": "inventory-service",
+    "version": "v1.8.2",
+    "status": "SUCCESS",
+    "environment": "production",
+    "deployed_by": "ci-cd-pipeline",
+    "commit_hash": "e82b7d4",
+    "commit_message": "perf(db): optimize catalog indexing query and batch update lock intervals",
+    "canary_passed": true,
+    "rollback_available": true
+  },
+  {
+    "deploy_id": "DEP-4103",
+    "timestamp": "2026-08-18T14:00:00Z",
+    "service": "checkout-service",
+    "version": "v2.14.0",
+    "status": "SUCCESS",
+    "environment": "production",
+    "deployed_by": "ci-cd-pipeline",
+    "commit_hash": "f901c8a",
+    "commit_message": "feat(ui): update checkout button styling, localized string bundle, and receipt date formatting",
+    "canary_passed": true,
+    "rollback_available": true,
+    "smoke_test_results": {
+      "passed": 48,
+      "failed": 0,
+      "avg_latency_ms": 112
+    },
+    "notes": "Deployment completed successfully. Verified healthy across all 12 replica pods post-rollout."
+  }
+]

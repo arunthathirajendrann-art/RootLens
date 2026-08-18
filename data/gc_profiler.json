@@ -1,0 +1,67 @@
+[
+  {
+    "trace_id": "GC-TRC-0101",
+    "timestamp": "2026-08-18T14:02:00Z",
+    "service": "checkout-service",
+    "heap_used_mb": 910,
+    "heap_max_mb": 2048,
+    "heap_utilization_pct": 44.4,
+    "gc_type": "YoungGen Minor GC",
+    "gc_pause_ms": 14,
+    "allocation_rate_mb_s": 18.2,
+    "stalled_worker_threads": 0,
+    "profiler_observation": "Nominal allocation rate; young generation object evacuation operating efficiently without promotion stalls."
+  },
+  {
+    "trace_id": "GC-TRC-0102",
+    "timestamp": "2026-08-18T14:12:45Z",
+    "service": "checkout-service",
+    "heap_used_mb": 1680,
+    "heap_max_mb": 2048,
+    "heap_utilization_pct": 82.0,
+    "gc_type": "OldGen Concurrent Mark",
+    "gc_pause_ms": 280,
+    "allocation_rate_mb_s": 84.5,
+    "stalled_worker_threads": 2,
+    "profiler_observation": "Rapid tenure space growth detected; long-lived hydrated cache objects accumulating in OldGen memory region."
+  },
+  {
+    "trace_id": "GC-TRC-0103",
+    "timestamp": "2026-08-18T14:14:55Z",
+    "service": "checkout-service",
+    "heap_used_mb": 1840,
+    "heap_max_mb": 2048,
+    "heap_utilization_pct": 89.8,
+    "gc_type": "Stop-the-World Major GC",
+    "gc_pause_ms": 2420,
+    "allocation_rate_mb_s": 112.0,
+    "stalled_worker_threads": 16,
+    "profiler_observation": "Full sweep triggered by OldGen allocation failure; tenured occupancy at 94% with high object retention preventing memory reclamation."
+  },
+  {
+    "trace_id": "GC-TRC-0104",
+    "timestamp": "2026-08-18T14:18:20Z",
+    "service": "checkout-service",
+    "heap_used_mb": 1945,
+    "heap_max_mb": 2048,
+    "heap_utilization_pct": 95.0,
+    "gc_type": "Stop-the-World Full GC (Compaction)",
+    "gc_pause_ms": 3820,
+    "allocation_rate_mb_s": 128.5,
+    "stalled_worker_threads": 32,
+    "profiler_observation": "Severe GC thrashing; compaction cycle reclaiming only 45MB of heap. Application worker threads blocked on memory allocation."
+  },
+  {
+    "trace_id": "GC-TRC-0105",
+    "timestamp": "2026-08-18T14:38:15Z",
+    "service": "checkout-service",
+    "heap_used_mb": 840,
+    "heap_max_mb": 2048,
+    "heap_utilization_pct": 41.0,
+    "gc_type": "YoungGen Minor GC",
+    "gc_pause_ms": 12,
+    "allocation_rate_mb_s": 19.0,
+    "stalled_worker_threads": 0,
+    "profiler_observation": "Heap occupancy returned to baseline following cache eviction; GC pause times normalized to <15ms."
+  }
+]
