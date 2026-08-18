@@ -30,10 +30,10 @@ def render_timeline(timeline: List[NormalizedSignal]):
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                 <div>
                     <span class="timeline-source {badge_class}">{src}</span>
-                    <span style="font-weight: 600; color: #f1f5f9;">{comp}</span>
+                    <span style="font-weight: 600; color: #1e293b;">{comp}</span>
                 </div>
                 <span class="timeline-time">{ts}</span>
             </div>
-            <div style="color: #cbd5e1; font-size: 0.95rem;">{msg}</div>
+            <div style="color: #334155; font-size: 0.95rem;">{msg}</div>
         </div>
         """, unsafe_allow_html=True)
