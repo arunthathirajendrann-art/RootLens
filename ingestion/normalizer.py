@@ -14,8 +14,8 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from utils.schemas import CanonicalEvent, CanonicalSeverity, CanonicalSource
-from utils.timestamp import format_iso_utc
+from utils.schemas import CanonicalEvent, CanonicalSeverity, CanonicalSource, NormalizedSignal
+from utils.timestamp import format_iso_utc, parse_iso_utc
 from .loaders import (
     load_alerts,
     load_audit_config_changes,
@@ -519,3 +519,24 @@ def normalize_late_evidence(
     # Sort chronologically by timestamp
     late_events.sort(key=lambda evt: evt["timestamp"])
     return late_events
+
+
+def ingest_all_signals(data_dir: Optional[Union[Path, str]] = None) -> List[NormalizedSignal]:
+    """Bridge adapter: Convert normalized initial signals into NormalizedSignal objects."""
+    canonical_events = normalize_initial_incident_signals(data_dir)
+    signals: List[NormalizedSignal] = []
+    for evt in canonical_events:
+        signals.append(
+            NormalizedSignal(
+                signal_id=evt["event_id"],
+                signal_type=evt["event_type"].lower(),
+                source=evt["source"],
+                timestamp=evt["timestamp"],
+                parsed_timestamp=parse_iso_utc(evt["timestamp"]),
+                component=evt["service"],
+                severity=evt["severity"],
+                message=evt["description"],
+                metadata=evt["metadata"],
+            )
+        )
+    return signals

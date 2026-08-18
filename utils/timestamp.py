@@ -27,3 +27,8 @@ def format_iso_utc(ts: Union[str, datetime.datetime]) -> str:
     """Format a timestamp into canonical ISO-8601 UTC format (YYYY-MM-DDTHH:MM:SSZ)."""
     dt = parse_iso_utc(ts)
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+# Compatibility aliases
+parse_datetime = parse_iso_utc
+format_datetime = format_iso_utc
