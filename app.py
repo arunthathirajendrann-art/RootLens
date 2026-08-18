@@ -195,13 +195,19 @@ with tab_dash:
         if os.path.exists(metrics_csv_path):
             df_metrics = pd.read_csv(metrics_csv_path)
             
-            st.write("Database Connection Pool Utilization")
-            df_conn = df_metrics[df_metrics['metric_name'] == 'db_connections']
-            st.line_chart(data=df_conn, x='timestamp', y='value', color="#ef4444")
+            # Service filter selectbox
+            services = df_metrics['service'].unique().tolist()
+            selected_service = st.selectbox("Filter Metrics by Service", services, index=services.index("payment-service") if "payment-service" in services else 0)
+            df_svc = df_metrics[df_metrics['service'] == selected_service]
             
-            st.write("Upstream Service Latency (ms)")
-            df_lat = df_metrics[df_metrics['metric_name'] == 'latency_ms']
-            st.line_chart(data=df_lat, x='timestamp', y='value', color="#f59e0b")
+            st.write(f"CPU Utilization % for {selected_service}")
+            st.line_chart(data=df_svc, x='timestamp', y='cpu_utilization_pct', color="#ef4444")
+            
+            st.write(f"p99 Latency (ms) for {selected_service}")
+            st.line_chart(data=df_svc, x='timestamp', y='p99_latency_ms', color="#f59e0b")
+            
+            st.write(f"Error Rate % for {selected_service}")
+            st.line_chart(data=df_svc, x='timestamp', y='error_rate_pct', color="#a855f7")
         else:
             st.info("No metrics file found.")
 
