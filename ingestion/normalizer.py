@@ -481,6 +481,7 @@ def normalize_gc_profiler(raw_gc: Optional[List[Dict[str, Any]]] = None) -> List
 
 def normalize_initial_incident_signals(
     data_dir: Optional[Union[Path, str]] = None,
+    raw_signals: Optional[Dict[str, List[Dict[str, Any]]]] = None,
 ) -> List[CanonicalEvent]:
     """Normalize and combine all initial operational signals.
 
@@ -488,14 +489,15 @@ def normalize_initial_incident_signals(
     Excludes late-arriving evidence and historical incidents.
     Returns events sorted chronologically by ISO-8601 timestamp.
     """
-    raw_signals = load_initial_incident_signals(data_dir)
+    if raw_signals is None:
+        raw_signals = load_initial_incident_signals(data_dir)
 
     all_events: List[CanonicalEvent] = []
-    all_events.extend(normalize_alerts(raw_signals["alerts"]))
-    all_events.extend(normalize_logs(raw_signals["logs"]))
-    all_events.extend(normalize_metrics(raw_signals["metrics"]))
-    all_events.extend(normalize_complaints(raw_signals["complaints"]))
-    all_events.extend(normalize_deployments(raw_signals["deployments"]))
+    all_events.extend(normalize_alerts(raw_signals.get("alerts", [])))
+    all_events.extend(normalize_logs(raw_signals.get("logs", [])))
+    all_events.extend(normalize_metrics(raw_signals.get("metrics", [])))
+    all_events.extend(normalize_complaints(raw_signals.get("complaints", [])))
+    all_events.extend(normalize_deployments(raw_signals.get("deployments", [])))
 
     # Sort chronologically by timestamp
     all_events.sort(key=lambda evt: evt["timestamp"])
@@ -521,9 +523,12 @@ def normalize_late_evidence(
     return late_events
 
 
-def ingest_all_signals(data_dir: Optional[Union[Path, str]] = None) -> List[NormalizedSignal]:
+def ingest_all_signals(
+    data_dir: Optional[Union[Path, str]] = None,
+    raw_signals: Optional[Dict[str, List[Dict[str, Any]]]] = None,
+) -> List[NormalizedSignal]:
     """Bridge adapter: Convert normalized initial signals into NormalizedSignal objects."""
-    canonical_events = normalize_initial_incident_signals(data_dir)
+    canonical_events = normalize_initial_incident_signals(data_dir, raw_signals=raw_signals)
     signals: List[NormalizedSignal] = []
     for evt in canonical_events:
         signals.append(

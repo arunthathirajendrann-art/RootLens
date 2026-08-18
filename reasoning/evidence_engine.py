@@ -162,13 +162,10 @@ def validate_incident_analysis(analysis: Dict[str, Any], timeline: List[Any]) ->
                         # Auto-normalize event_id in evidence dictionary to exact canonical ID
                         item["event_id"] = matched_id
 
-    # 4. Validate Recovery Proposal
-    recovery = analysis.get("recovery_proposal") or analysis.get("recovery_actions")
-    if recovery is None:
-        errors.append("Missing or invalid 'recovery_proposal' object.")
-    elif isinstance(recovery, dict):
-        if recovery.get("requires_human_approval") is not True:
-            errors.append("Recovery proposal MUST have 'requires_human_approval' set to True.")
+    # 4. Validate Recommended Fix
+    fix = analysis.get("recommended_fix") or analysis.get("recovery_proposal") or analysis.get("recovery_actions")
+    if fix is None:
+        errors.append("Missing or invalid 'recommended_fix' object.")
 
     is_valid = len(errors) == 0
     return is_valid, errors

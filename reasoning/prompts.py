@@ -39,22 +39,18 @@ JSON OUTPUT SCHEMA:
           "reason": "Why this specific timeline event contradicts this hypothesis"
         }
       ],
-      "reasoning_summary": "Explanation of why this hypothesis ranks where it does"
+      "reasoning_summary": "Explanation of why this hypothesis ranks where it does",
+      "implicated_file": "path/to/source/file.py",
+      "implicated_line": 12,
+      "source_snippet": "def broken_code():..."
     }
   ],
-  "diagnostic_sequence": [
-    {
-      "priority": 1,
-      "diagnostic": "Specific command or check to run",
-      "tests_hypothesis": "The specific root cause hypothesis being evaluated",
-      "expected_signal": "What signal would confirm or weaken this hypothesis"
-    }
-  ],
-  "recovery_proposal": {
-    "action": "Proposed mitigation or recovery action",
-    "reason": "Why this action is proposed based on evidence",
-    "risk": "Potential risks or drawbacks of executing this action",
-    "requires_human_approval": true
+  "recommended_fix": {
+    "file": "path/to/source/file.py",
+    "diff_before": "old line of code",
+    "diff_after": "fixed line of code",
+    "explanation": "Plain language explanation of why this fix works",
+    "risk": "Risk impact note (e.g. config-only change, safe)"
   }
 }
 """
@@ -63,6 +59,7 @@ JSON OUTPUT SCHEMA:
 def build_analysis_prompt(
     timeline: List[Dict[str, Any]],
     past_incidents: Optional[List[Dict[str, Any]]] = None,
+    source_code_str: Optional[str] = None,
 ) -> str:
     """Build user prompt containing the structured incident timeline and valid event IDs."""
     valid_event_ids = [
@@ -78,12 +75,15 @@ def build_analysis_prompt(
 VALID EVENT IDs THAT YOU MAY REFERENCE:
 {json.dumps(valid_event_ids)}
 """
+    if source_code_str:
+        prompt += f"\nSOURCE CODE REPOSITORY CONTENT:\n{source_code_str}\n"
+
     if past_incidents:
         prompt += f"\nHISTORICAL INCIDENT MEMORY:\n{json.dumps(past_incidents, indent=2)}\n"
 
     prompt += """
 Instructions:
-Analyze the timeline events and metadata above and output structured JSON following all constraints.
+Analyze the timeline events and metadata above, along with the source code, and output structured JSON following all constraints.
 Ensure all referenced event_ids exist in the VALID EVENT IDs list above.
 """
     return prompt
